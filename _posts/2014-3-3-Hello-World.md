@@ -97,7 +97,7 @@ endDate = c("2016-11-01") #今回は３ヶ月間の情報を取得
 
 
 #login
-gconnect(usr, psw)![Payload Too Large]()
+gconnect(usr, psw)
 
 
 #Scraping with gtrends
