@@ -1,11 +1,19 @@
 ---
 layout: post
 title: アニメ『ラブライブ！サンシャイン！！』 ３つの手作り料理<br />最も世間が関心を寄せたのはシャイ煮？ヨキソバ？堕天使の涙？
+author: "Unadon(見習い飯炊き兵)"
+date: "` r format(Sys.time(), '%Y/%m/%d')`"
+output: 
+  html_document:
+    md_extention: -ascii_identifiers
+    number_sections: yes
+    theme: paper
+    toc: yes
+    toc_float: yes
 ---
 
 
 動作環境:Mac OS Sierra 10.12.1; R　version３.３.１; rstan 2.10.1
-author : 見習い飯炊き兵
 
 ### 研究の背景
 
@@ -40,18 +48,24 @@ Stanユーザーのみなさまは、『ラブライブ！サンシャイン！�
 <img width="450" alt="Datenshi_no_Namida.png" src="https://qiita-image-store.s3.amazonaws.com/0/151938/2ed0d744-0267-f807-623e-5156ab6b7ff5.png">
 
 
-###　研究の目的
+### 　研究の目的
 
 これらの料理、アニメファンにとっては「ぜひとも一度食べてみたい！夢の料理」であることとおもいます。なにせ、ヒロインたちの手作りですからね。
 ところで、ヨキソバ、堕天使の涙、シャイ煮って、どれが最も世間的な注目を集めたのでしょうか。私は、一人のファンとして『シャイ煮』を応援していきたいと思います。それでは、聖地沼津の巡礼者獲得戦略に役立たんことを祈って、
 
-<CENTER>　それでは、　データ分析　スタートです！　</CENTER>　
+
+<CENTER> 
+それでは、　データ分析　スタートです！　
+</CENTER>　
+
 
 ### 方法
 
 1.　まずは、Google Trendsで検索したときの、「キーワードの人気度」をスクレイピングしてきます。
 以下のサイトを参照させていただきました。使用パッケージは”gtrendsR”。
+
 https://www.karada-good.net/analyticsr/r-392/
+
 あわせて、stanやデータ成形用パッケージも読み込んでおきます。
 
 
@@ -66,6 +80,7 @@ library(stringr)
 
 2.　続いて、gtrendsRを用いてRからGoogleTrends検索をかけ、データを引っ張ってきます。
 皆様のGoogleアカウントアドレスとパスワード、さらには検索キーワードを下記のコード内に入れてください。
+
 (Githubでコードをクローンしないよう気をつけてください。あとで面倒です。)
 
 ```
@@ -101,9 +116,9 @@ ggplot(Dat, aes(x = start, y = hits, colour = keyword))+
 ```
 
 結果はこのような感じでデータを取り出してくることができました。
-<iframe width="500" height="400" frameborder="0" scrolling="no" src="//plot.ly/~JiroSakamoto/5.embed"></iframe>
+<iframe width="600" height="400" frameborder="0" scrolling="no" src="//plot.ly/~JiroSakamoto/5.embed"></iframe>
 
-３．　さて、上記データから、"それぞれの人気度平均"を求めていきたいと思います。
+3. さて、上記データから、"それぞれの人気度平均"を求めていきたいと思います。
 
 まずは、３つの料理それぞれの人気度が正規分布に従うと仮定して、人気度平均を求めてみます。
 
