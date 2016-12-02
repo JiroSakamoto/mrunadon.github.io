@@ -1,0 +1,233 @@
+---
+layout: post
+title: アニメ『ラブライブ！サンシャイン！！』 ３つの手作り料理<br />最も世間が関心を寄せたのはシャイ煮？ヨキソバ？堕天使の涙？
+author: "Unadon(見習い飯炊き兵)"
+date: "` r format(Sys.time(), '%Y/%m/%d')`"
+output: 
+  html_document:
+    md_extention: -ascii_identifiers
+    number_sections: yes
+    theme: paper
+    toc: yes
+    toc_float: yes
+---
+
+
+動作環境:Mac OS Sierra 10.12.1; R　version３.３.１; rstan 2.10.1
+
+### 研究の背景
+
+Stanユーザーのみなさまは、『ラブライブ！サンシャイン！！』というアニメーションをご存知でしょうか。絶大な人気を誇るアニメシリーズ「ラブライブ！」の続編作品であり、このアニメの放映により、舞台である静岡県沼津市に革命的ともいえる現象が起こっています。
+
+[![](http://img.youtube.com/vi/hipdIQmjj9Y/0.jpg)](https://www.youtube.com/watch?v=hipdIQmjj9Y)
+
+ーーー以前はもみじマークばかり・・・　今は、一体何が走ってねん・・・
+
+
+
+　　
+
+そんな大人気アニメの本編　第１０話では、
+ヒロインたちが海の家を盛り上げるため、それはそれは一生懸命に手作り料理を作って売り出します。
+
+なお、以下のキャプチャ画像は、本稿内容の紹介に必要最低限な範囲で使用するものとして、利用させていただきます。
+
+まずは、アニメに登場した３つの料理をご紹介しましょう。
+
+
+(A)シャイ煮: 高級食材の洋風煮込み
+
+<img width="215" alt="Shini 2.png" src="https://qiita-image-store.s3.amazonaws.com/0/151938/13183e96-0374-3987-99fc-2bf42eae9aa9.png">
+
+(B)ヨキソバ：　定番オムそば
+
+<img width="450" alt="YokiSoba.png" src="https://qiita-image-store.s3.amazonaws.com/0/151938/2767a5a7-96be-3a42-724d-aba2905980bb.png">
+
+(C)堕天使の涙：　呪術的なたこ焼き
+
+<img width="450" alt="Datenshi_no_Namida.png" src="https://qiita-image-store.s3.amazonaws.com/0/151938/2ed0d744-0267-f807-623e-5156ab6b7ff5.png">
+
+
+### 　研究の目的
+
+これらの料理、アニメファンにとっては「ぜひとも一度食べてみたい！夢の料理」であることとおもいます。なにせ、ヒロインたちの手作りですからね。
+ところで、ヨキソバ、堕天使の涙、シャイ煮って、どれが最も世間的な注目を集めたのでしょうか。私は、一人のファンとして『シャイ煮』を応援していきたいと思います。それでは、聖地沼津の巡礼者獲得戦略に役立たんことを祈って、
+
+
+<CENTER> 
+それでは、　データ分析　スタートです！　
+</CENTER>　
+
+
+### 方法
+
+1.　まずは、Google Trendsで検索したときの、「キーワードの人気度」をスクレイピングしてきます。
+以下のサイトを参照させていただきました。使用パッケージは”gtrendsR”。
+
+https://www.karada-good.net/analyticsr/r-392/
+
+あわせて、stanやデータ成形用パッケージも読み込んでおきます。
+
+
+```
+library(rstan) 
+library(gtrendsR) # Scraping Google Trends
+library(ggplot2) 
+library(reshape2) 
+library(stringi)
+library(stringr)
+```
+
+2.　続いて、gtrendsRを用いてRからGoogleTrends検索をかけ、データを引っ張ってきます。
+皆様のGoogleアカウントアドレスとパスワード、さらには検索キーワードを下記のコード内に入れてください。
+
+(Githubでコードをクローンしないよう気をつけてください。あとで面倒です。)
+
+```
+#グーグルアカウントの "メール" と"パスワード"を入力
+usr = " " #mail adress
+psw = " " # PassWord
+
+# 検索キーワードを設定
+keyWords<-c("シャイ煮", "ヨキソバ", "堕天使の涙")
+
+# データ取得期間の設定。機関3ヶ月未満だと日毎のデータ、それ以上は週ごとになってしまう
+startDate = c("2016-08-01") #アニメ放送3週間くらい前、たぶん 
+endDate = c("2016-11-01") #今回は３ヶ月間の情報を取得
+
+
+#login
+gconnect(usr, psw)
+
+
+#Scraping with gtrends
+GetTrend = gtrends(query = stri_encode(keyWords, "", "utf-8"), 
+                    geo = "JP", # get data of "Japan Regions: JP"
+                    start_date = startDate, 
+                    end_date = endDate
+)
+
+# ggplot2-------------------------------------------
+Dat = as.data.frame(GetTrend$trend)
+ggplot(Dat, aes(x = start, y = hits, colour = keyword))+
+  theme_set(theme_gray(base_family="HiraKakuProN-W3"))+ 
+  geom_line(size = 1.0) +labs(colour = "検索ワード", x = "日付（月）", y = "検索人気度", title = GetTrend$meta) 
+
+```
+
+結果はこのような感じでデータを取り出してくることができました。
+<iframe width="600" height="400" frameborder="0" scrolling="no" src="//plot.ly/~JiroSakamoto/5.embed"></iframe>
+
+3. さて、上記データから、"それぞれの人気度平均"を求めていきたいと思います。
+
+まずは、３つの料理それぞれの人気度が正規分布に従うと仮定して、人気度平均を求めてみます。
+
+```
+
+# Data Reshaping----------------------------------------------------
+#上の検索結果Datから、料理別でヒット数を抜いてくる
+Shini = Dat$hits[1:c(length(Dat$hits)/3)]
+Datenshi = Dat$hits[c(length(Dat$hits)/3+1):c(length(Dat$hits)/3*2)]
+Yoki = Dat$hits[c(length(Dat$hits)/3*2+1):c(length(Dat$hits))]
+N = c(length(Dat$hits)/3)
+
+
+#For Stan----------------------------------------------------------
+#shini, datenshi, yokiをそれぞれGaussian平均パラメータとする
+#vector theta[3]は検索が”ゼロ”の確率。
+parameters<- c("shini","datenshi","yoki","sigma")
+
+# 各料理の検索人気は[0,100]の整数データ。Nは料理別での取得データ数。
+#これをStanに渡すデータとする。
+datastan=list(Shini=Shini,Datenshi=Datenshi,Yoki=Yoki,N=N)
+
+# Data Reshaping--------------------------------------------------------
+#上の検索結果Datから、料理別でヒット数を抜いてくる
+Shini = Dat$hits[1:c(length(Dat$hits)/3)]
+Datenshi = Dat$hits[c(length(Dat$hits)/3+1):c(length(Dat$hits)/3*2)]
+Yoki = Dat$hits[c(length(Dat$hits)*2/3+1):c(length(Dat$hits))]
+N = c(length(Dat$hits)/3)
+
+
+#For Stan----------------------------------------------------------
+#shini, datenshi, yokiをそれぞれGaussian平均パラメータとする
+#vector theta[3]は検索が”ゼロ”の確率。
+parameters =  c("shini","datenshi","yoki","sigma")
+
+# 各料理の検索人気は[0,100]のデータ。Nは料理別での取得データ数。
+#これをStanに渡すデータとする。
+datastan=list(Shini=Shini,Datenshi=Datenshi,Yoki=Yoki,N=N)
+
+#Gaussian Estimation model
+model = '
+data {
+int N;
+int Shini[N];
+int Datenshi[N];
+int Yoki[N];
+}
+
+parameters{
+real <lower=0, upper=100>shini;
+real <lower=0, upper=100>datenshi;
+real <lower=0, upper=100>yoki;
+vector <lower=0>[3]sigma;
+
+}
+
+model {
+//Gaussian means and SD
+shini ~ normal(0, 10);
+datenshi ~ normal(0, 10);
+yoki ~ normal(0, 10);
+sigma ~ cauchy(0,5);
+
+//Mean Estimation
+for(i in 1:N){
+Shini[i] ~ normal(shini, sigma[1]); 
+Datenshi[i] ~ normal(datenshi, sigma[2]); 
+Yoki[i] ~ normal(yoki, sigma[3]); 
+}
+
+}
+
+'
+
+#Stanfit
+fit = stan(model_code = model,data=datastan,pars = parameters)
+
+```
+
+結果は以下の通り。
+
+```
+> print(summary(fit)$summary[,c(1,4,8,9,10)])
+                mean         2.5%       97.5%    n_eff      Rhat
+shini       6.227136    3.6407266    8.782404 3073.287 1.0000258
+datenshi    1.559253    1.1659848    1.950266 3578.117 0.9997438
+yoki        1.337652    0.7643921    1.913707 3447.389 1.0004679
+sigma[1]   12.570849   10.8442216   14.720791 3664.980 1.0001956
+sigma[2]    1.873462    1.6191177    2.168589 3661.752 0.9998802
+sigma[3]    2.784135    2.4101546    3.214992 3619.665 1.0000360
+lp__     -514.656912 -519.2933259 -512.101014 2062.016 1.0005966
+> 
+```
+
+ggplotで見てみましょう。
+
+```
+#extract MCMC samples
+d.ext = as.data.frame(extract(fit,permuted=T))
+shini = d.ext$shini[1:4000]
+datenshi<-d.ext$datenshi[1:4000]
+yoki = d.ext$yoki[1:4000]
+
+#result Plot 
+extData<-data.frame(shini=shini,datenshi=datenshi,yoki=yoki)
+extDf<-melt(extData,id=c(),variable.name = "Dishes")
+extDf$value<-as.numeric(extDf$value)
+ggplot(data=extDf, aes(x=value, fill=Dishes)) + geom_density(alpha=0.4,position = "identity")
+```
+
+
+
