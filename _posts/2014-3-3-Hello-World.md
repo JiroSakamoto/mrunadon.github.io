@@ -1,14 +1,16 @@
 ---
 layout: post
-title: 『ラブライブ！サンシャイン！！』に登場した３つの手作り料理<br />最も世間が関心を寄せたのはシャイ煮？ヨキソバ？堕天使の涙？
+title: アニメ『ラブライブ！サンシャイン！！』 ３つの手作り料理<br />最も世間が関心を寄せたのはシャイ煮？ヨキソバ？堕天使の涙？
 ---
 
 
 動作環境:Mac OS Sierra 10.12.1; R　version３.３.１; rstan 2.10.1
 author : 見習い飯炊き兵
+
 ## 『ラブライブ！サンシャイン！！』に登場した３つの手作り料理<br />最も世間が関心を寄せたのはシャイ煮？ヨキソバ？堕天使の涙？
 
-###研究の背景
+### 研究の背景
+
 Stanユーザーのみなさまは、『ラブライブ！サンシャイン！！』というアニメーションをご存知でしょうか。絶大な人気を誇るアニメシリーズ「ラブライブ！」の続編作品であり、このアニメの放映により、舞台である静岡県沼津市に革命的ともいえる現象が起こっています。
 
 [![](http://img.youtube.com/vi/hipdIQmjj9Y/0.jpg)](https://www.youtube.com/watch?v=hipdIQmjj9Y)
@@ -19,7 +21,10 @@ Stanユーザーのみなさまは、『ラブライブ！サンシャイン！�
 　　
 
 そんな大人気アニメの本編　第１０話では、
-ヒロインたちが海の家を盛り上げるため、それはそれは一生懸命に手作り料理を作って売り出します。なお、以下のキャプチャ画像は、本稿内容の紹介に必要最低限な範囲で使用するものとして、利用させていただきます。
+ヒロインたちが海の家を盛り上げるため、それはそれは一生懸命に手作り料理を作って売り出します。
+
+なお、以下のキャプチャ画像は、本稿内容の紹介に必要最低限な範囲で使用するものとして、利用させていただきます。
+
 まずは、アニメに登場した３つの料理をご紹介しましょう。
 
 
@@ -36,13 +41,16 @@ Stanユーザーのみなさまは、『ラブライブ！サンシャイン！�
 <img width="450" alt="Datenshi_no_Namida.png" src="https://qiita-image-store.s3.amazonaws.com/0/151938/2ed0d744-0267-f807-623e-5156ab6b7ff5.png">
 
 
-###研究の目的
+###　研究の目的
+
 これらの料理、アニメファンにとっては「ぜひとも一度食べてみたい！夢の料理」であることとおもいます。なにせ、ヒロインたちの手作りですからね。
 ところで、ヨキソバ、堕天使の涙、シャイ煮って、どれが最も世間的な注目を集めたのでしょうか。私は、一人のファンとして『シャイ煮』を応援していきたいと思います。それでは、聖地沼津の巡礼者獲得戦略に役立たんことを祈って、
-####データ分析　スタートです！
 
+<CENTER>
+####　データ分析　スタートです！
+<CENTER>
 
-###方法-
+###　方法
 
 1.まずは、Google Trendsで検索したときの、「キーワードの人気度」をスクレイピングしてきます。
 以下のサイトを参照させていただきました。使用パッケージは”gtrendsR”。
@@ -65,15 +73,15 @@ library(stringr)
 
 ```
 #グーグルアカウントの "メール" と"パスワード"を入力
-usr <- "  " #mail adress
-psw <- "  " # PassWord
+usr = " " #mail adress
+psw = " " # PassWord
 
 # 検索キーワードを設定
 keyWords<-c("シャイ煮", "ヨキソバ", "堕天使の涙")
 
 # データ取得期間の設定。機関3ヶ月未満だと日毎のデータ、それ以上は週ごとになってしまう
-startDate<-c("2016-08-01") #アニメ放送3週間くらい前、たぶん 
-endDate<-c("2016-11-01") #今回は３ヶ月間の情報を取得
+startDate = c("2016-08-01") #アニメ放送3週間くらい前、たぶん 
+endDate = c("2016-11-01") #今回は３ヶ月間の情報を取得
 
 
 #login
@@ -81,14 +89,14 @@ gconnect(usr, psw)![Payload Too Large]()
 
 
 #Scraping with gtrends
-GetTrend <- gtrends(query = stri_encode(keyWords, "", "utf-8"), 
+GetTrend = gtrends(query = stri_encode(keyWords, "", "utf-8"), 
                     geo = "JP", # get data of "Japan Regions: JP"
                     start_date = startDate, 
                     end_date = endDate
 )
 
 # ggplot2-------------------------------------------
-Dat<-as.data.frame(GetTrend$trend)
+Dat = as.data.frame(GetTrend$trend)
 ggplot(Dat, aes(x = start, y = hits, colour = keyword))+
   theme_set(theme_gray(base_family="HiraKakuProN-W3"))+ 
   geom_line(size = 1.0) +labs(colour = "検索ワード", x = "日付（月）", y = "検索人気度", title = GetTrend$meta) 
@@ -106,10 +114,10 @@ ggplot(Dat, aes(x = start, y = hits, colour = keyword))+
 
 # Data Reshaping----------------------------------------------------
 #上の検索結果Datから、料理別でヒット数を抜いてくる
-Shini<-Dat$hits[1:c(length(Dat$hits)/3)]
-Datenshi<-Dat$hits[c(length(Dat$hits)/3+1):c(length(Dat$hits)/3*2)]
-Yoki<-Dat$hits[c(length(Dat$hits)/3*2+1):c(length(Dat$hits))]
-N<-c(length(Dat$hits)/3)
+Shini = Dat$hits[1:c(length(Dat$hits)/3)]
+Datenshi = Dat$hits[c(length(Dat$hits)/3+1):c(length(Dat$hits)/3*2)]
+Yoki = Dat$hits[c(length(Dat$hits)/3*2+1):c(length(Dat$hits))]
+N = c(length(Dat$hits)/3)
 
 
 #For Stan----------------------------------------------------------
@@ -123,23 +131,23 @@ datastan=list(Shini=Shini,Datenshi=Datenshi,Yoki=Yoki,N=N)
 
 # Data Reshaping--------------------------------------------------------
 #上の検索結果Datから、料理別でヒット数を抜いてくる
-Shini<-Dat$hits[1:c(length(Dat$hits)/3)]
-Datenshi<-Dat$hits[c(length(Dat$hits)/3+1):c(length(Dat$hits)/3*2)]
-Yoki<-Dat$hits[c(length(Dat$hits)*2/3+1):c(length(Dat$hits))]
-N<-c(length(Dat$hits)/3)
+Shini = Dat$hits[1:c(length(Dat$hits)/3)]
+Datenshi = Dat$hits[c(length(Dat$hits)/3+1):c(length(Dat$hits)/3*2)]
+Yoki = Dat$hits[c(length(Dat$hits)*2/3+1):c(length(Dat$hits))]
+N = c(length(Dat$hits)/3)
 
 
 #For Stan----------------------------------------------------------
 #shini, datenshi, yokiをそれぞれGaussian平均パラメータとする
 #vector theta[3]は検索が”ゼロ”の確率。
-parameters<- c("shini","datenshi","yoki","sigma")
+parameters =  c("shini","datenshi","yoki","sigma")
 
 # 各料理の検索人気は[0,100]のデータ。Nは料理別での取得データ数。
 #これをStanに渡すデータとする。
 datastan=list(Shini=Shini,Datenshi=Datenshi,Yoki=Yoki,N=N)
 
 #Gaussian Estimation model
-model<-'
+model = '
 data {
 int N;
 int Shini[N];
@@ -174,7 +182,7 @@ Yoki[i] ~ normal(yoki, sigma[3]);
 '
 
 #Stanfit
-fit<- stan(model_code = model,data=datastan,pars=parameters)
+fit = stan(model_code = model,data=datastan,pars = parameters)
 
 ```
 
@@ -197,10 +205,10 @@ ggplotで見てみましょう。
 
 ```
 #extract MCMC samples
-d.ext<-as.data.frame(extract(fit,permuted=T))
-shini<-d.ext$shini[1:4000]
+d.ext = as.data.frame(extract(fit,permuted=T))
+shini = d.ext$shini[1:4000]
 datenshi<-d.ext$datenshi[1:4000]
-yoki<-d.ext$yoki[1:4000]
+yoki = d.ext$yoki[1:4000]
 
 #result Plot 
 extData<-data.frame(shini=shini,datenshi=datenshi,yoki=yoki)
