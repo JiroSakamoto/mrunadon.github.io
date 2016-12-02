@@ -195,7 +195,7 @@ lp__     -514.656912 -519.2933259 -512.101014 2062.016 1.0005966
 
 ggplotで見てみましょう。
 
-```{r}
+```
 #extract MCMC samples
 d.ext<-as.data.frame(extract(fit,permuted=T))
 shini<-d.ext$shini[1:4000]
