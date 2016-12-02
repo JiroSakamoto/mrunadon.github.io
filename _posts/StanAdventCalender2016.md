@@ -1,15 +1,6 @@
 ---
 layout: post
 title: アニメ『ラブライブ！サンシャイン！！』 ３つの手作り料理<br />最も世間が関心を寄せたのはシャイ煮？ヨキソバ？堕天使の涙？
-author: "Unadon(見習い飯炊き兵)"
-date: "` r format(Sys.time(), '%Y/%m/%d')`"
-output: 
-  html_document:
-    md_extention: -ascii_identifiers
-    number_sections: yes
-    theme: paper
-    toc: yes
-    toc_float: yes
 ---
 
 
