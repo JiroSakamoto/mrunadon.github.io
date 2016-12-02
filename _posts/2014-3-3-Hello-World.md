@@ -50,7 +50,7 @@ https://www.karada-good.net/analyticsr/r-392/
 あわせて、stanやデータ成形用パッケージも読み込んでおきます。
 
 
-```{ja}
+```
 library(rstan) 
 library(gtrendsR) # Scraping Google Trends
 library(ggplot2) 
@@ -63,7 +63,7 @@ library(stringr)
 皆様のGoogleアカウントアドレスとパスワード、さらには検索キーワードを下記のコード内に入れてください。
 (Githubでコードをクローンしないよう気をつけてください。あとで面倒です。)
 
-```{r}
+```
 #グーグルアカウントの "メール" と"パスワード"を入力
 usr <- "  " #mail adress
 psw <- "  " # PassWord
@@ -102,7 +102,7 @@ ggplot(Dat, aes(x = start, y = hits, colour = keyword))+
 
 まずは、３つの料理それぞれの人気度が正規分布に従うと仮定して、人気度平均を求めてみます。
 
-```{r}
+```
 
 # Data Reshaping----------------------------------------------------
 #上の検索結果Datから、料理別でヒット数を抜いてくる
