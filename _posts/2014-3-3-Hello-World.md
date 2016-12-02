@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Test　and Publishing
+title: 『ラブライブ！サンシャイン！！』に登場した３つの手作り料理<br />最も世間が関心を寄せたのはシャイ煮？ヨキソバ？堕天使の涙？
 ---
 
 
@@ -24,12 +24,15 @@ Stanユーザーのみなさまは、『ラブライブ！サンシャイン！�
 
 
 (A)シャイ煮: 高級食材の洋風煮込み
+
 <img width="215" alt="Shini 2.png" src="https://qiita-image-store.s3.amazonaws.com/0/151938/13183e96-0374-3987-99fc-2bf42eae9aa9.png">
 
 (B)ヨキソバ：　定番オムそば
+
 <img width="450" alt="YokiSoba.png" src="https://qiita-image-store.s3.amazonaws.com/0/151938/2767a5a7-96be-3a42-724d-aba2905980bb.png">
 
 (C)堕天使の涙：　呪術的なたこ焼き
+
 <img width="450" alt="Datenshi_no_Namida.png" src="https://qiita-image-store.s3.amazonaws.com/0/151938/2ed0d744-0267-f807-623e-5156ab6b7ff5.png">
 
 
@@ -47,7 +50,7 @@ https://www.karada-good.net/analyticsr/r-392/
 あわせて、stanやデータ成形用パッケージも読み込んでおきます。
 
 
-```{r}
+```{ja}
 library(rstan) 
 library(gtrendsR) # Scraping Google Trends
 library(ggplot2) 
